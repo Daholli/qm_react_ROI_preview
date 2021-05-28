@@ -2,13 +2,14 @@ import "react-hot-loader";
 import React from "react";
 import ReactDOM from "react-dom";
 import reportWebVitals from "./reportWebVitals";
+import "./styles.css";
 
 import App from "./components/App";
 
 ReactDOM.render(<App />, document.getElementById("root"));
 
 if (module.hot) {
-    module.hot.accept("./App", () => {
+    module.hot.accept("./components/App", () => {
         ReactDOM.render(<App />, document.getElementById("root"));
     });
 }

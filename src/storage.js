@@ -6,6 +6,9 @@ const [storage] = create((set) => ({
 
     setSize: ({ width, height }) => set({ width, height }),
 
+    currentImageID: 0,
+    setCurrentImageID: (id) => set(() => ({ currentImageID: id })),
+
     playerWidth: 320,
     playerHeight: 180,
 
@@ -15,6 +18,15 @@ const [storage] = create((set) => ({
     setScale: (scale) => set({ scale }),
     isDrawing: false,
     toggleDrawing: () => set((state) => ({ isDrawing: !state.isDrawing })),
+
+    markerWidth: 50,
+    markerHeight: 50,
+
+    setMarkerSize: (size) =>
+        set(() => ({ markerWidth: size.width, markerHeight: size.height })),
+
+    markers: [],
+    setMarkers: (markers) => set((s) => ({ markers })),
 
     selectedMarkerID: null,
     selectMarker: (selectedMarkerID) => set({ selectedMarkerID }),
