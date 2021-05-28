@@ -14,7 +14,8 @@ body {
 }
 
 h2 {
-    text-align: center;
+    text-align: left;
+    padding-left: 20%;
 }
 
 .App {
@@ -26,7 +27,7 @@ h2 {
 }
 
 .main-player {
-    width: 60%;
+    width: 40%;
     margin: 10px;
     position: relative;
 }
@@ -34,4 +35,5 @@ h2 {
 .ROI-Preview {
     width: auto;
     padding: 10px;
+    position: relative;
 }
