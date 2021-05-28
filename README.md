@@ -6,8 +6,8 @@ As part of my advanced practical at quality-match I was tasked with creating an 
 
 My first approach for creating a preview is using 2 "konva-canvas" one that shows the full picture while it also allows for the creation of markers. And one canvas, that shows a cropped version of the picture defined by the selected marker, that is scaled to match the size of the preview window.
 
-TODO: allow deletion of markers, create markers with a button rather than on click in empty space
+![first_iteration_preview.jpg](./images/first_iteration_preview.jpg)
 
-![first_iteration_preview.jpg](./pictures_for_README/first_iteration_preview.jpg)
+TODO: allow deletion of markers, create markers with a button rather than on click in empty space
 
 ### 2.) Multiple pictures
