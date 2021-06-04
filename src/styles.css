@@ -13,25 +13,6 @@ body {
     box-sizing: border-box;
 }
 
-h2 {
-    text-align: left;
-    padding-left: 20%;
-}
-
-.App {
-    display: flex;
-}
-
-.canvas {
-    box-shadow: 0 0 5px grey;
-}
-
-.main-player {
-    width: 40%;
-    margin: 10px;
-    position: relative;
-}
-
 .ROI-Preview {
     width: auto;
     padding: 10px;

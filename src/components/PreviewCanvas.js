@@ -4,9 +4,7 @@ import { Stage } from "react-konva";
 
 import CurrentPreview from "./CurrentPreview";
 
-const IMG_URL = "test_image.png";
-
-const PreviewCanvas = ({ crop, videoPlayerStats }) => {
+const PreviewCanvas = ({ crop, videoPlayerStats, currentImage }) => {
     const [scale, setScale] = React.useState({
         x: 100 / crop.width,
         y: 100 / crop.height,
@@ -26,7 +24,7 @@ const PreviewCanvas = ({ crop, videoPlayerStats }) => {
             scaleX={scale.x / (videoPlayerStats.width / 100)}
             scaleY={scale.y / (videoPlayerStats.height / 100)}
         >
-            <CurrentPreview IMG_URL={IMG_URL} crop={crop} scale={scale} />
+            <CurrentPreview crop={crop} scale={scale} currentImage={currentImage} />
         </Stage>
     );
 };

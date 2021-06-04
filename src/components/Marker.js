@@ -33,7 +33,18 @@ const Marker = ({ shapeProps, isSelected, onSelect, onChange, setCrop }) => {
                         };
                     });
                 }}
-                onTransformEnd={(e) => {
+                onDragMove={(e) => {
+                    onChange({ ...shapeProps, x: e.target.x(), y: e.target.y() });
+                    setCrop(() => {
+                        return {
+                            x: e.target.x(),
+                            y: e.target.y(),
+                            width: shapeProps.width,
+                            height: shapeProps.height,
+                        };
+                    });
+                }}
+                onTransform={(e) => {
                     // transformer is changing scale of the node
                     // and NOT its width or height
                     // but in the store we have only width and height
@@ -61,6 +72,9 @@ const Marker = ({ shapeProps, isSelected, onSelect, onChange, setCrop }) => {
                             height: Math.max(node.height() * scaleY),
                         };
                     });
+                }}
+                onDeleted={(e) => {
+                    console.log(e, "Attempted delete");
                 }}
             />
             {isSelected && (

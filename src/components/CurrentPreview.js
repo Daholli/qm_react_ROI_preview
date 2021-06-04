@@ -2,14 +2,10 @@ import React from "react";
 import { Image, Layer } from "react-konva";
 import useImage from "use-image";
 
-const CurrentImage = ({ IMG_URL, crop, scale }) => {
+const CurrentImage = ({ crop, scale, currentImage }) => {
     const layerRef = React.useRef();
 
-    const [image] = useImage(IMG_URL, "Anonymous");
-
-    React.useEffect(() => {
-        console.log(crop, scale);
-    });
+    const [image] = useImage(currentImage, "Anonymous");
 
     return (
         <Layer ref={layerRef}>

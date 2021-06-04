@@ -5,7 +5,8 @@ import { Stage, Layer } from "react-konva";
 import CurrentImage from "./CurrentImage";
 import Marker from "./Marker";
 
-const IMG_URL = "test_image.png";
+// const IMG_URL = "test_image.png";
+const IMG_URL = "maxresdefault.jpg";
 
 function getRelativePointerPosition(node) {
     // the function will return pointer position relative to the passed node
@@ -20,7 +21,14 @@ function getRelativePosition(node, pos) {
     return transform.point(pos);
 }
 
-const PlayerCanvas = ({ setCrop, setImageSize }) => {
+const PlayerCanvas = ({
+    setCrop,
+    videoPlayerStats,
+    setVideoPlayerStats,
+    createMarkerBool,
+    setCreateMarkerBool,
+    currentImage,
+}) => {
     const [rectangles, setRectangles] = React.useState([]);
     const [selectedId, selectMarker] = React.useState(null);
 
@@ -29,14 +37,13 @@ const PlayerCanvas = ({ setCrop, setImageSize }) => {
         const clickedOnEmpty =
             e.target === e.target.getStage() || e.target.name() === "current-image";
 
-        // console.log(clickedOnEmpty, e.target.name());
         if (clickedOnEmpty) {
             selectMarker(null);
         }
     };
 
     const createMarker = (e) => {
-        if (!selectedId && e.target.name() === "current-image") {
+        if (createMarkerBool) {
             let rect = rectangles.slice();
             const point = getRelativePointerPosition(e.target.getStage());
 
@@ -50,10 +57,11 @@ const PlayerCanvas = ({ setCrop, setImageSize }) => {
                 id: rectangles.length + 1 + IMG_URL,
             });
             setRectangles(rect.concat());
+            setCreateMarkerBool(false);
         } else return;
     };
 
-    const [size] = React.useState({
+    const [size, setSize] = React.useState({
         width: window.innerWidth,
         height: window.innerHeight,
     });
@@ -63,6 +71,8 @@ const PlayerCanvas = ({ setCrop, setImageSize }) => {
             name="player-canvas"
             width={size.width}
             height={size.height}
+            scaleX={1}
+            scaleY={1}
             onMouseDown={(e) => {
                 checkDeselect(e);
                 createMarker(e);
@@ -72,7 +82,11 @@ const PlayerCanvas = ({ setCrop, setImageSize }) => {
                 createMarker(e);
             }}
         >
-            <CurrentImage IMG_URL={IMG_URL} setImageSize={setImageSize} />
+            <CurrentImage
+                IMG_URL={IMG_URL}
+                setVideoPlayerStats={setVideoPlayerStats}
+                currentImage={currentImage}
+            />
             <Layer>
                 {rectangles.map((rect, i) => {
                     return (
