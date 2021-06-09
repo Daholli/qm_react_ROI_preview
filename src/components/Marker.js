@@ -1,7 +1,15 @@
 import React from "react";
 import { Rect, Transformer } from "react-konva";
 
-const Marker = ({ shapeProps, isSelected, onSelect, onChange, setCrop }) => {
+const Marker = ({
+    positions,
+    currentImage,
+    shapeProps,
+    isSelected,
+    onSelect,
+    onChange,
+    setCrop,
+}) => {
     const shapeRef = React.useRef();
     const trRef = React.useRef();
 
@@ -13,36 +21,66 @@ const Marker = ({ shapeProps, isSelected, onSelect, onChange, setCrop }) => {
         }
     }, [isSelected]);
 
+    if (!positions) return;
+
+    const updateCrop = () => {
+        setCrop(() => {
+            const crop = {
+                x: positions.get(currentImage).x,
+                y: positions.get(currentImage).y,
+                width: shapeProps.width,
+                height: shapeProps.height,
+            };
+            return crop;
+        });
+    };
     return (
         <React.Fragment>
+            {/* <Rect globalCompositeOperation="destination-out" listening={false} closed /> */}
             <Rect
                 name="marker"
                 onClick={onSelect}
                 onTap={onSelect}
                 ref={shapeRef}
+                x={positions.x}
+                y={positions.y}
                 {...shapeProps}
                 draggable
                 onDragEnd={(e) => {
-                    onChange({ ...shapeProps, x: e.target.x(), y: e.target.y() });
-                    setCrop(() => {
-                        return {
+                    onChange({
+                        ...shapeProps,
+                        positions: positions.set(currentImage, {
                             x: e.target.x(),
                             y: e.target.y(),
-                            width: shapeProps.width,
-                            height: shapeProps.height,
-                        };
+                        }),
                     });
+                    updateCrop();
+                    // setCrop(() => {
+                    //     return {
+                    //         x: e.target.x(),
+                    //         y: e.target.y(),
+                    //         width: shapeProps.width,
+                    //         height: shapeProps.height,
+                    //     };
+                    // });
                 }}
                 onDragMove={(e) => {
-                    onChange({ ...shapeProps, x: e.target.x(), y: e.target.y() });
-                    setCrop(() => {
-                        return {
+                    onChange({
+                        ...shapeProps,
+                        positions: positions.set(currentImage, {
                             x: e.target.x(),
                             y: e.target.y(),
-                            width: shapeProps.width,
-                            height: shapeProps.height,
-                        };
+                        }),
                     });
+                    updateCrop();
+                    // setCrop(() => {
+                    //     return {
+                    //         x: e.target.x(),
+                    //         y: e.target.y(),
+                    //         width: shapeProps.width,
+                    //         height: shapeProps.height,
+                    //     };
+                    // });
                 }}
                 onTransform={(e) => {
                     // transformer is changing scale of the node
@@ -58,16 +96,18 @@ const Marker = ({ shapeProps, isSelected, onSelect, onChange, setCrop }) => {
                     node.scaleY(1);
                     onChange({
                         ...shapeProps,
-                        x: node.x(),
-                        y: node.y(),
+                        positions: positions.set(currentImage, {
+                            x: node.x,
+                            y: node.y,
+                        }),
                         // set minimal value
                         width: Math.max(5, node.width() * scaleX),
                         height: Math.max(node.height() * scaleY),
                     });
                     setCrop(() => {
                         return {
-                            x: node.x(),
-                            y: node.y(),
+                            x: e.target.x(),
+                            y: e.target.y(),
                             width: Math.max(5, node.width() * scaleX),
                             height: Math.max(node.height() * scaleY),
                         };

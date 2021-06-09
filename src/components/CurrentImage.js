@@ -2,7 +2,7 @@ import React from "react";
 import { Image, Layer } from "react-konva";
 import useImage from "use-image";
 
-const CurrentImage = ({ IMG_URL, setVideoPlayerStats, currentImage }) => {
+const CurrentImage = ({ setVideoPlayerStats, currentImage }) => {
     const layerRef = React.useRef();
 
     const [image] = useImage(currentImage, "Anonymous");

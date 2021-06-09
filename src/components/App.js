@@ -7,30 +7,93 @@ import PreviewCanvas from "./PreviewCanvas";
 import { SkipNext, SkipPrevious, AddCircle } from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
 
+// import extractFrames from "ffmpeg-extract-frames";
+
+function range(end) {
+    return Array(end - 1 + 1)
+        .fill()
+        .map((_, idx) => "image_" + (idx + 1) + ".jpg");
+}
+
 const App = () => {
     const [videoPlayerStats, setVideoPlayerStats] = React.useState({
-        width: 300,
-        height: 300,
+        width: 800,
+        height: 400,
     });
 
     const [crop, setCrop] = React.useState(() => {
         return {
             x: 0,
             y: 0,
-            width: videoPlayerStats.width,
-            height: videoPlayerStats.height,
+            width: 100,
+            height: 100,
         };
     });
 
-    const [currentImage, setCurrentImage] = React.useState("maxresdefault.jpg");
+    const [imageSequence, setImageSequence] = React.useState(range(60));
 
+    const onFileChange = async (e) => {
+        // const file = e.target.files[0];
+        // setImageSequence(() => {
+        //     return range(60);
+        // });
+        // await reactFFMPEG.process(
+        //     file,
+        //     '-metadata location="" -c:v copy -c:a copy',
+        //     function (e) {
+        //         const video = e.result;
+        //         console.log(video);
+        //         try {
+        //             const process = new ffmpeg(video.name, function (err, video) {
+        //                 console.log(err.code);
+        //                 console.log(err.message);
+        //             });
+        //             process.then(function (video) {
+        //                 video.fnExtractFrameToJPG(
+        //                     "../public/",
+        //                     {
+        //                         every_n_frames: 1,
+        //                         file_name: "image_%n",
+        //                     },
+        //                     function (err, files) {
+        //                         if (!err) {
+        //                             setImageSequence(() => {
+        //                                 return files;
+        //                             });
+        //                             console.log(imageSequence);
+        //                         }
+        //                     }
+        //                 );
+        //             });
+        //         } catch (err) {
+        //             console.log(err.code);
+        //             console.log(err.message);
+        //         }
+        //     }
+        // );
+        // await extractFrames({ input: file, output: "../../public/image-%d.png" });
+    };
+
+    const [currentImage, setCurrentImage] = React.useState(0);
     const [createMarkerBool, setCreateMarkerBool] = React.useState(false);
+
+    const nextImage = (e) => {
+        if (currentImage + 1 <= imageSequence.length - 1) {
+            setCurrentImage(() => currentImage + 1);
+        }
+    };
+
+    const prevImage = (e) => {
+        if (currentImage - 1 >= 0) {
+            setCurrentImage(() => currentImage - 1);
+        }
+    };
 
     return (
         <React.Fragment>
             <h2
                 style={{
-                    left: videoPlayerStats.width / 2,
+                    left: 400,
                     position: "relative",
                 }}
             >
@@ -43,7 +106,7 @@ const App = () => {
                     style={{
                         position: "relative",
                         margin: "20px",
-                        width: videoPlayerStats.width + 100,
+                        width: 900,
                     }}
                 >
                     <PlayerCanvas
@@ -52,7 +115,7 @@ const App = () => {
                         setVideoPlayerStats={setVideoPlayerStats}
                         createMarkerBool={createMarkerBool}
                         setCreateMarkerBool={setCreateMarkerBool}
-                        currentImage={currentImage}
+                        currentImage={imageSequence[currentImage]}
                     />
                 </div>
                 <div
@@ -60,14 +123,14 @@ const App = () => {
                     style={{
                         position: "absolute",
                         left: "10px",
-                        top: videoPlayerStats.height + 20,
+                        top: 470,
                     }}
                 >
-                    <IconButton aria-label="previous">
+                    <IconButton aria-label="previous" onClick={prevImage}>
                         <SkipPrevious style={{ color: "green" }} />
                     </IconButton>
 
-                    <IconButton aria-label="next">
+                    <IconButton aria-label="next" onClick={nextImage}>
                         <SkipNext style={{ color: "green" }} />
                     </IconButton>
                 </div>
@@ -75,8 +138,8 @@ const App = () => {
                     className="MarkerControls"
                     style={{
                         position: "absolute",
-                        top: videoPlayerStats.height + 20,
-                        left: videoPlayerStats.width - 20,
+                        top: 470,
+                        left: 685,
                     }}
                 >
                     <IconButton
@@ -87,12 +150,24 @@ const App = () => {
                     >
                         <AddCircle style={{ color: "green" }} />
                     </IconButton>
+                    <input
+                        type="file"
+                        accept="audio/*,video/*"
+                        onChange={(e) => onFileChange(e)}
+                    />
                 </div>
-                <div className="ROI-Preview">
+                <div
+                    className="ROI-Preview"
+                    style={{
+                        width: "auto",
+                        position: "relative",
+                        marginTop: "20px",
+                    }}
+                >
                     <PreviewCanvas
                         crop={crop}
                         videoPlayerStats={videoPlayerStats}
-                        currentImage={currentImage}
+                        currentImage={imageSequence[currentImage]}
                     />
                 </div>
             </div>

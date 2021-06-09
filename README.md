@@ -1,8 +1,10 @@
 # React based Preview of ROI-Tracking Points
 
-As part of my advanced practical at quality-match I was tasked with creating an React Component, that enables the creation of tracks with individual points and a preview for the markers. Once a specific track is selected, show a preview of the area specified by the marker. This preview should update on movement, resize, and obviously whenever there is a change of the currently displayed frame.
+### Task
 
-### 1.) Creating a preview
+Implement a simple video player React component. The user can either press a play button to play the video or step through it manually with a next or a previous frame button. On the footage a point can be clicked to set a track point. Decide how to visualize the trackpoint and store the pixel position for each frame. This process can be done for each frame of the footage to create a tracking over all or at least a part of the frames. Next step is to add a track window component. Start with a fixed ROI to crop from the footage around your track point. Try to clearly separate the logic in components. Components that just display should only do that, components that process data, should only do that. If you have time and motivation left, make the ROI size adjustable and add other features you may find useful for the track-window. Make adding more than one feature track possible.
+
+### 1. Creating a preview
 
 My first approach for creating a preview is using 2 "konva-canvas" one that shows the full picture while it also allows for the creation of markers. And one canvas, that shows a cropped version of the picture defined by the selected marker, that is scaled to match the size of the preview window.
 
@@ -15,7 +17,7 @@ Also now the system can accept any image and display it in both the main player 
 
 TODO: allow deletion of markers (probably done by using the rightclick menu, though i am still brainstorming there)
 
-### 2.) Multiple pictures
+### 2. Multiple pictures
 
 Given the name of the Picture as a String the player can now switch the pictures at runtime. now i need a good way of converting a video to a list of images be able to navigate to them through the forward and backward buttons. This should then display the appropriate marker locations for the picture.
 

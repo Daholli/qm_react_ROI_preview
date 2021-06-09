@@ -12,9 +12,3 @@ body {
 *:after {
     box-sizing: border-box;
 }
-
-.ROI-Preview {
-    width: auto;
-    padding: 10px;
-    position: relative;
-}

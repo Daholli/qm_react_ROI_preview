@@ -5,9 +5,6 @@ import { Stage, Layer } from "react-konva";
 import CurrentImage from "./CurrentImage";
 import Marker from "./Marker";
 
-// const IMG_URL = "test_image.png";
-const IMG_URL = "maxresdefault.jpg";
-
 function getRelativePointerPosition(node) {
     // the function will return pointer position relative to the passed node
     // get pointer (say mouse or touch) position
@@ -29,7 +26,7 @@ const PlayerCanvas = ({
     setCreateMarkerBool,
     currentImage,
 }) => {
-    const [rectangles, setRectangles] = React.useState([]);
+    const [markers, setMarkers] = React.useState([]);
     const [selectedId, selectMarker] = React.useState(null);
 
     const checkDeselect = (e) => {
@@ -44,35 +41,58 @@ const PlayerCanvas = ({
 
     const createMarker = (e) => {
         if (createMarkerBool) {
-            let rect = rectangles.slice();
-            const point = getRelativePointerPosition(e.target.getStage());
+            if (selectedId === null) {
+                let rect = markers.slice();
+                const point = getRelativePointerPosition(e.target.getStage());
+                console.log(point.x, point.y);
 
-            rect.push({
-                x: point.x - 10,
-                y: point.y - 10,
-                width: 20,
-                height: 20,
-                fill: "grey",
-                opacity: 0.5,
-                id: rectangles.length + 1 + IMG_URL,
-            });
-            setRectangles(rect.concat());
-            setCreateMarkerBool(false);
+                let positions = new Map().set(currentImage, {
+                    x: point.x,
+                    y: point.y,
+                });
+                rect.push({
+                    positions,
+                    width: 100,
+                    height: 100,
+                    fill: "grey",
+                    stroke: "black",
+                    opacity: 0.3,
+                    id: markers.length,
+                });
+                setMarkers(rect.concat());
+                selectMarker(markers.length);
+                setCreateMarkerBool(false);
+            }
         } else return;
     };
 
-    const [size, setSize] = React.useState({
-        width: window.innerWidth,
-        height: window.innerHeight,
+    const [scale, setScale] = React.useState({
+        x: 1,
+        y: 1,
     });
+
+    React.useEffect(() => {
+        if (videoPlayerStats.width > 800) {
+            setScale(() => {
+                const tmp_scale = Math.min(
+                    800 / videoPlayerStats.width,
+                    450 / videoPlayerStats.height
+                );
+                return {
+                    x: tmp_scale,
+                    y: tmp_scale,
+                };
+            });
+        }
+    }, [setScale, videoPlayerStats]);
 
     return (
         <Stage
             name="player-canvas"
-            width={size.width}
-            height={size.height}
-            scaleX={1}
-            scaleY={1}
+            width={800}
+            height={450}
+            scaleX={scale.x}
+            scaleY={scale.y}
             onMouseDown={(e) => {
                 checkDeselect(e);
                 createMarker(e);
@@ -83,41 +103,46 @@ const PlayerCanvas = ({
             }}
         >
             <CurrentImage
-                IMG_URL={IMG_URL}
                 setVideoPlayerStats={setVideoPlayerStats}
                 currentImage={currentImage}
             />
             <Layer>
-                {rectangles.map((rect, i) => {
+                {markers.map((rect, i) => {
                     return (
                         <Marker
                             key={i}
+                            positions={rect.positions}
+                            currentImage={currentImage}
                             shapeProps={rect}
                             isSelected={rect.id === selectedId}
                             onSelect={(e) => {
                                 selectMarker(rect.id);
+                                console.log(rect);
                                 setCrop(() => {
-                                    return {
-                                        x: rect.x,
-                                        y: rect.y,
-                                        width: rect.width,
-                                        height: rect.height,
-                                    };
+                                    try {
+                                        return {
+                                            x: rect.positions.get(currentImage).x,
+                                            y: rect.positions.get(currentImage).y,
+                                            width: rect.width,
+                                            height: rect.height,
+                                        };
+                                    } catch (err) {
+                                        console.log(err.code);
+                                        console.log(err.message);
+                                        return {
+                                            x: 0,
+                                            y: 0,
+                                            width: 1,
+                                            height: 1,
+                                        };
+                                    }
                                 });
                             }}
                             onChange={(newAttrs) => {
-                                const rects = rectangles.slice();
+                                const rects = markers.slice();
                                 rects[i] = newAttrs;
-                                setRectangles(rects);
+                                setMarkers(rects);
                                 selectMarker(rects[i].id);
-                                setCrop(() => {
-                                    return {
-                                        x: rect.x,
-                                        y: rect.y,
-                                        width: rect.width,
-                                        height: rect.height,
-                                    };
-                                });
                             }}
                             setCrop={setCrop}
                         />
