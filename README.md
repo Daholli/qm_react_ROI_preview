@@ -22,3 +22,15 @@ TODO: allow deletion of markers (probably done by using the rightclick menu, tho
 Given the name of the Picture as a String the player can now switch the pictures at runtime. now i need a good way of converting a video to a list of images be able to navigate to them through the forward and backward buttons. This should then display the appropriate marker locations for the picture.
 
 Also Marker creation should cycle through every picture, so every Marker (and the list of positions) is completed before you create a new Marker.
+
+![mapImageToCoordinates](./images/mapImageToCoordinates.png)
+
+Using JS Map I am now able to add new Coordinates to a marker by moving the rectangle in the new picture... sadly this is not the intended way. I am looking for a way to force a redraw, once I change the currently shown Image. All the other parts of the Code seem to be working as intended... as far as i can tell anyways.
+
+As "Video" i am using a 2 Second clip from https://www.youtube.com/watch?v=bqtqltqcQhw& since it shows an easily trackable "boid". Currently I locally converted a video using ffmpeg but the endgame goal would be to upload a video that is being converted, and then enable the ability to track points within that video.
+
+I also want to add a way to import and export tracks but that is for way later.
+
+### Force a redraw
+
+My current biggest problem is, I draw the marker layer once.. and never again. but I would like to redraw the marker layer everytime there is a change in the background picture (same goes for the preview) once i have this figured out most of the baseline for the project should be done.
