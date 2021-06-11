@@ -34,6 +34,7 @@ const Marker = ({
             return crop;
         });
     };
+
     return (
         <React.Fragment>
             {/* <Rect globalCompositeOperation="destination-out" listening={false} closed /> */}

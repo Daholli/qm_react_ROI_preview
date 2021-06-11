@@ -106,7 +106,7 @@ const PlayerCanvas = ({
                 setVideoPlayerStats={setVideoPlayerStats}
                 currentImage={currentImage}
             />
-            <Layer>
+            <Layer clearBeforeDraw={true}>
                 {markers.map((rect, i) => {
                     return (
                         <Marker

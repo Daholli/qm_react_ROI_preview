@@ -89,6 +89,12 @@ const App = () => {
         }
     };
 
+    const onImageChangeTrigger = (e) => {};
+
+    React.useEffect(() => {
+        console.log(currentImage);
+    }, [currentImage]);
+
     return (
         <React.Fragment>
             <h2
@@ -116,6 +122,7 @@ const App = () => {
                         createMarkerBool={createMarkerBool}
                         setCreateMarkerBool={setCreateMarkerBool}
                         currentImage={imageSequence[currentImage]}
+                        onImageChange={onImageChangeTrigger}
                     />
                 </div>
                 <div
