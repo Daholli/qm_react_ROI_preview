@@ -25,10 +25,11 @@ const PlayerCanvas = ({
     createMarkerBool,
     setCreateMarkerBool,
     currentImage,
+    markers,
+    setMarkers,
+    selectedId,
+    selectMarker,
 }) => {
-    const [markers, setMarkers] = React.useState([]);
-    const [selectedId, selectMarker] = React.useState(null);
-
     const checkDeselect = (e) => {
         // deselect when clicked on empty area
         const clickedOnEmpty =
@@ -46,9 +47,9 @@ const PlayerCanvas = ({
                 const point = getRelativePointerPosition(e.target.getStage());
                 console.log(point.x, point.y);
 
-                let positions = new Map().set(currentImage, {
-                    x: point.x,
-                    y: point.y,
+                const positions = new Map().set(currentImage, {
+                    x: point.x - 50,
+                    y: point.y - 50,
                 });
                 rect.push({
                     positions,
@@ -61,6 +62,24 @@ const PlayerCanvas = ({
                 });
                 setMarkers(rect.concat());
                 selectMarker(markers.length);
+                setCreateMarkerBool(false);
+            } else {
+                let rect = markers.slice();
+                const point = getRelativePointerPosition(e.target.getStage());
+
+                let positions = rect[selectedId].positions.set(currentImage, {
+                    x: point.x - 50,
+                    y: point.y - 50,
+                });
+
+                rect[selectedId] = {
+                    ...rect[selectedId],
+                    positions,
+                };
+
+                console.log(rect);
+                setMarkers(rect.concat());
+                selectMarker(rect[selectedId].id);
                 setCreateMarkerBool(false);
             }
         } else return;
@@ -106,7 +125,7 @@ const PlayerCanvas = ({
                 setVideoPlayerStats={setVideoPlayerStats}
                 currentImage={currentImage}
             />
-            <Layer clearBeforeDraw={true}>
+            <Layer clearBeforeDraw={true} isListening={true}>
                 {markers.map((rect, i) => {
                     return (
                         <Marker

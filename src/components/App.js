@@ -4,7 +4,9 @@ import React from "react";
 import PlayerCanvas from "./PlayerCanvas";
 import PreviewCanvas from "./PreviewCanvas";
 
-import { SkipNext, SkipPrevious, AddCircle } from "@material-ui/icons";
+import MarkerList from "./MarkerList";
+
+import { PlayArrow, Stop, SkipNext, SkipPrevious, AddCircle } from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
 
 // import extractFrames from "ffmpeg-extract-frames";
@@ -31,6 +33,9 @@ const App = () => {
     });
 
     const [imageSequence, setImageSequence] = React.useState(range(60));
+
+    const [markers, setMarkers] = React.useState([]);
+    const [selectedId, selectMarker] = React.useState(null);
 
     const onFileChange = async (e) => {
         // const file = e.target.files[0];
@@ -89,11 +94,44 @@ const App = () => {
         }
     };
 
-    const onImageChangeTrigger = (e) => {};
+    const resetVideo = (e) => {
+        setCurrentImage(0);
+    };
+
+    const playVideo = async (e) => {
+        for (let i = currentImage; i < imageSequence.length; i++) {
+            setCurrentImage(() => i);
+            await sleep(20);
+        }
+        return;
+    };
+
+    function sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
 
     React.useEffect(() => {
-        console.log(currentImage);
-    }, [currentImage]);
+        if (selectedId === null) return;
+        if (markers[selectedId] === undefined) return;
+        if (
+            markers[selectedId].positions.get(imageSequence[currentImage]) === undefined
+        )
+            return;
+
+        setCrop(() => {
+            const crop = {
+                x: markers[selectedId].positions.get(imageSequence[currentImage]).x,
+                y: markers[selectedId].positions.get(imageSequence[currentImage]).y,
+                width: markers[selectedId].width,
+                height: markers[selectedId].height,
+            };
+            return crop;
+        });
+
+        // let tmp_markers = markers.slice();
+        // console.log(tmp_markers[selectedId]);
+        // setMarkers(tmp_markers.concat());
+    }, [currentImage, imageSequence, markers, selectedId, setCrop]);
 
     return (
         <React.Fragment>
@@ -122,7 +160,10 @@ const App = () => {
                         createMarkerBool={createMarkerBool}
                         setCreateMarkerBool={setCreateMarkerBool}
                         currentImage={imageSequence[currentImage]}
-                        onImageChange={onImageChangeTrigger}
+                        markers={markers}
+                        setMarkers={setMarkers}
+                        selectedId={selectedId}
+                        selectMarker={selectMarker}
                     />
                 </div>
                 <div
@@ -135,6 +176,14 @@ const App = () => {
                 >
                     <IconButton aria-label="previous" onClick={prevImage}>
                         <SkipPrevious style={{ color: "green" }} />
+                    </IconButton>
+
+                    <IconButton aria-label="play" onClick={playVideo}>
+                        <PlayArrow style={{ color: "green" }} />
+                    </IconButton>
+
+                    <IconButton aria-label="stop" onClick={resetVideo}>
+                        <Stop style={{ color: "green" }} />
                     </IconButton>
 
                     <IconButton aria-label="next" onClick={nextImage}>
@@ -175,6 +224,12 @@ const App = () => {
                         crop={crop}
                         videoPlayerStats={videoPlayerStats}
                         currentImage={imageSequence[currentImage]}
+                    />
+                    <MarkerList
+                        markers={markers}
+                        setMarkers={setMarkers}
+                        selectedId={selectedId}
+                        selectMarker={selectMarker}
                     />
                 </div>
             </div>

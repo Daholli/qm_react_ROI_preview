@@ -15,13 +15,14 @@ const Marker = ({
 
     React.useEffect(() => {
         if (isSelected) {
+            if (positions.get(currentImage) === undefined) return;
             // we need to attach transformer manually
             trRef.current.nodes([shapeRef.current]);
             trRef.current.getLayer().batchDraw();
         }
-    }, [isSelected]);
+    }, [isSelected, positions, currentImage]);
 
-    if (!positions) return;
+    if (!positions) return null;
 
     const updateCrop = () => {
         setCrop(() => {
@@ -35,6 +36,8 @@ const Marker = ({
         });
     };
 
+    if (!positions.get(currentImage)) return null;
+
     return (
         <React.Fragment>
             {/* <Rect globalCompositeOperation="destination-out" listening={false} closed /> */}
@@ -43,8 +46,8 @@ const Marker = ({
                 onClick={onSelect}
                 onTap={onSelect}
                 ref={shapeRef}
-                x={positions.x}
-                y={positions.y}
+                x={positions.get(currentImage).x}
+                y={positions.get(currentImage).y}
                 {...shapeProps}
                 draggable
                 onDragEnd={(e) => {
@@ -56,14 +59,6 @@ const Marker = ({
                         }),
                     });
                     updateCrop();
-                    // setCrop(() => {
-                    //     return {
-                    //         x: e.target.x(),
-                    //         y: e.target.y(),
-                    //         width: shapeProps.width,
-                    //         height: shapeProps.height,
-                    //     };
-                    // });
                 }}
                 onDragMove={(e) => {
                     onChange({
@@ -74,14 +69,6 @@ const Marker = ({
                         }),
                     });
                     updateCrop();
-                    // setCrop(() => {
-                    //     return {
-                    //         x: e.target.x(),
-                    //         y: e.target.y(),
-                    //         width: shapeProps.width,
-                    //         height: shapeProps.height,
-                    //     };
-                    // });
                 }}
                 onTransform={(e) => {
                     // transformer is changing scale of the node

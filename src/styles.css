@@ -12,3 +12,20 @@ body {
 *:after {
     box-sizing: border-box;
 }
+
+.marker-list {
+    position: relative;
+    margin-top: 10px;
+    padding-top: 10px;
+}
+
+.marker {
+    padding: 5px;
+    margin: 5px;
+    border-radius: 3px;
+    box-shadow: 0 0 1px grey;
+}
+
+.marker button {
+    float: right;
+}

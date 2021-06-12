@@ -34,3 +34,9 @@ I also want to add a way to import and export tracks but that is for way later.
 ### Force a redraw
 
 My current biggest problem is, I draw the marker layer once.. and never again. but I would like to redraw the marker layer everytime there is a change in the background picture (same goes for the preview) once i have this figured out most of the baseline for the project should be done.
+
+### First Working Prototype
+
+![gif](./images/tracking.gif)
+
+This still has some flickering I might be able to get rid of, but this looks like it does have most of the required functions
