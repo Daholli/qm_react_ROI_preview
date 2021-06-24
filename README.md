@@ -40,3 +40,10 @@ My current biggest problem is, I draw the marker layer once.. and never again. b
 ![gif](./images/tracking.gif)
 
 This still has some flickering I might be able to get rid of, but this looks like it does have most of the required functions
+
+### Some polishing
+
+Latest Version features KeyEventListener, you can now navigate the video with the use of ArrowForward and ArrowBackward, also Space will start the videoplayback. Adding the markers has now been adjusted to what i previously had in mind,
+using a toggle button you can enter editing mode, as long as you are in editing mode, you can easily add a single marker per frame of the currently selected series. this makes annotating a single track very easy and fast. The tool also supports "sparse" tracks meaning if a point leaves the video, but re-enters you can skip trackpoints by just skipping the frame.
+
+![toggleButton](./images/toggleButton.png)
