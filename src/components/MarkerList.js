@@ -8,9 +8,9 @@ const SortableItem = SortableElement(
             return (
                 <div
                     className="marker"
-                    style={{ boxShadow: `0 0 5px red`, border: `1px solid red` }}
+                    style={{ boxShadow: `0 0 5px green`, border: `1px solid green` }}
                     onMouseDown={() => selectMarker(marker.id)}
-                    onTap={() => selectMarker(marker.id)}
+                    onTouchStart={() => selectMarker(marker.id)}
                 >
                     #{marker.id}
                     <button
@@ -28,7 +28,7 @@ const SortableItem = SortableElement(
                     className="marker"
                     style={{ boxShadow: `0 0 5px grey`, border: `1px solid grey` }}
                     onMouseDown={() => selectMarker(marker.id)}
-                    onTap={() => selectMarker(marker.id)}
+                    onTouchStart={() => selectMarker(marker.id)}
                 >
                     #{marker.id}
                     <button

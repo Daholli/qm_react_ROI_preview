@@ -28,4 +28,6 @@ body {
 
 .marker button {
     float: right;
+    font-weight: bold;
+    color: red;
 }

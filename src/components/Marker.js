@@ -85,8 +85,8 @@ const Marker = ({
                     onChange({
                         ...shapeProps,
                         positions: positions.set(currentImage, {
-                            x: node.x,
-                            y: node.y,
+                            x: e.target.x(),
+                            y: e.target.y(),
                         }),
                         // set minimal value
                         width: Math.max(5, node.width() * scaleX),

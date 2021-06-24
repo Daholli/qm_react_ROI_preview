@@ -6,10 +6,9 @@ import PreviewCanvas from "./PreviewCanvas";
 
 import MarkerList from "./MarkerList";
 
-import { PlayArrow, Stop, SkipNext, SkipPrevious, AddCircle } from "@material-ui/icons";
-import IconButton from "@material-ui/core/IconButton";
-
-// import extractFrames from "ffmpeg-extract-frames";
+import { PlayArrow, Stop, SkipNext, SkipPrevious, Edit } from "@material-ui/icons";
+import { IconButton } from "@material-ui/core";
+import { ToggleButton } from "@material-ui/lab";
 
 function range(end) {
     return Array(end - 1 + 1)
@@ -27,8 +26,8 @@ const App = () => {
         return {
             x: 0,
             y: 0,
-            width: 100,
-            height: 100,
+            width: 1,
+            height: 1,
         };
     });
 
@@ -37,77 +36,51 @@ const App = () => {
     const [markers, setMarkers] = React.useState([]);
     const [selectedId, selectMarker] = React.useState(null);
 
-    const onFileChange = async (e) => {
-        // const file = e.target.files[0];
-        // setImageSequence(() => {
-        //     return range(60);
-        // });
-        // await reactFFMPEG.process(
-        //     file,
-        //     '-metadata location="" -c:v copy -c:a copy',
-        //     function (e) {
-        //         const video = e.result;
-        //         console.log(video);
-        //         try {
-        //             const process = new ffmpeg(video.name, function (err, video) {
-        //                 console.log(err.code);
-        //                 console.log(err.message);
-        //             });
-        //             process.then(function (video) {
-        //                 video.fnExtractFrameToJPG(
-        //                     "../public/",
-        //                     {
-        //                         every_n_frames: 1,
-        //                         file_name: "image_%n",
-        //                     },
-        //                     function (err, files) {
-        //                         if (!err) {
-        //                             setImageSequence(() => {
-        //                                 return files;
-        //                             });
-        //                             console.log(imageSequence);
-        //                         }
-        //                     }
-        //                 );
-        //             });
-        //         } catch (err) {
-        //             console.log(err.code);
-        //             console.log(err.message);
-        //         }
-        //     }
-        // );
-        // await extractFrames({ input: file, output: "../../public/image-%d.png" });
-    };
-
     const [currentImage, setCurrentImage] = React.useState(0);
+
+    const [markerInImage, setMarkerInImage] = React.useState(false);
     const [createMarkerBool, setCreateMarkerBool] = React.useState(false);
+    const [editButtonStyle, setEditButtonStyle] = React.useState({ color: "green" });
 
-    const nextImage = (e) => {
-        if (currentImage + 1 <= imageSequence.length - 1) {
-            setCurrentImage(() => currentImage + 1);
-        }
-    };
+    const [fps, setFPS] = React.useState(30);
 
-    const prevImage = (e) => {
+    const prevImage = () => {
         if (currentImage - 1 >= 0) {
-            setCurrentImage(() => currentImage - 1);
+            setCurrentImage((currentImage) => currentImage - 1);
         }
     };
 
-    const resetVideo = (e) => {
-        setCurrentImage(0);
+    const nextImage = () => {
+        if (currentImage + 1 <= imageSequence.length - 1) {
+            setCurrentImage((currentImage) => currentImage + 1);
+        }
     };
 
-    const playVideo = async (e) => {
+    const playVideo = async () => {
         for (let i = currentImage; i < imageSequence.length; i++) {
             setCurrentImage(() => i);
-            await sleep(20);
+            await sleep(1000 / fps);
         }
-        return;
+    };
+
+    const resetVideo = () => {
+        setCurrentImage(0);
     };
 
     function sleep(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    function handleKeyDown(e) {
+        e.preventDefault();
+        // console.log(`Key: ${e.key} with keycode ${e.keyCode} has been pressed`);
+        if (e.keyCode === 37) {
+            prevImage();
+        } else if (e.keyCode === 39) {
+            nextImage();
+        } else if (e.keyCode === 32) {
+            playVideo();
+        }
     }
 
     React.useEffect(() => {
@@ -115,9 +88,12 @@ const App = () => {
         if (markers[selectedId] === undefined) return;
         if (
             markers[selectedId].positions.get(imageSequence[currentImage]) === undefined
-        )
+        ) {
+            setMarkerInImage(false);
             return;
+        }
 
+        setMarkerInImage(true);
         setCrop(() => {
             const crop = {
                 x: markers[selectedId].positions.get(imageSequence[currentImage]).x,
@@ -127,11 +103,15 @@ const App = () => {
             };
             return crop;
         });
-
-        // let tmp_markers = markers.slice();
-        // console.log(tmp_markers[selectedId]);
-        // setMarkers(tmp_markers.concat());
     }, [currentImage, imageSequence, markers, selectedId, setCrop]);
+
+    React.useEffect(() => {
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    });
 
     return (
         <React.Fragment>
@@ -141,10 +121,14 @@ const App = () => {
                     position: "relative",
                 }}
             >
-                {" "}
-                Video Player with ROI-Preview{" "}
+                Video Player with ROI-Preview
             </h2>
-            <div className="App" style={{ position: "relative", display: "flex" }}>
+
+            <div
+                className="App"
+                style={{ position: "relative", display: "flex" }}
+                onKeyPress={handleKeyDown}
+            >
                 <div
                     className="main-player"
                     style={{
@@ -164,6 +148,7 @@ const App = () => {
                         setMarkers={setMarkers}
                         selectedId={selectedId}
                         selectMarker={selectMarker}
+                        markerInImage={markerInImage}
                     />
                 </div>
                 <div
@@ -190,28 +175,34 @@ const App = () => {
                         <SkipNext style={{ color: "green" }} />
                     </IconButton>
                 </div>
+
                 <div
                     className="MarkerControls"
                     style={{
                         position: "absolute",
                         top: 470,
-                        left: 685,
+                        left: 780,
                     }}
                 >
-                    <IconButton
+                    <ToggleButton
                         aria-label="new"
-                        onClick={() => {
-                            setCreateMarkerBool(true);
+                        value="check"
+                        size="small"
+                        selected={createMarkerBool}
+                        onChange={() => {
+                            setCreateMarkerBool(!createMarkerBool);
+                            if (editButtonStyle.color === "green") {
+                                setEditButtonStyle({ color: "yellow" });
+                            } else {
+                                setEditButtonStyle({ color: "green" });
+                            }
                         }}
+                        onClick={() => {}}
                     >
-                        <AddCircle style={{ color: "green" }} />
-                    </IconButton>
-                    <input
-                        type="file"
-                        accept="audio/*,video/*"
-                        onChange={(e) => onFileChange(e)}
-                    />
+                        <Edit style={editButtonStyle} />
+                    </ToggleButton>
                 </div>
+
                 <div
                     className="ROI-Preview"
                     style={{
@@ -225,6 +216,7 @@ const App = () => {
                         videoPlayerStats={videoPlayerStats}
                         currentImage={imageSequence[currentImage]}
                     />
+
                     <MarkerList
                         markers={markers}
                         setMarkers={setMarkers}

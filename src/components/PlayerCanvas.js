@@ -29,6 +29,7 @@ const PlayerCanvas = ({
     setMarkers,
     selectedId,
     selectMarker,
+    markerInImage,
 }) => {
     const checkDeselect = (e) => {
         // deselect when clicked on empty area
@@ -38,51 +39,6 @@ const PlayerCanvas = ({
         if (clickedOnEmpty) {
             selectMarker(null);
         }
-    };
-
-    const createMarker = (e) => {
-        if (createMarkerBool) {
-            if (selectedId === null) {
-                let rect = markers.slice();
-                const point = getRelativePointerPosition(e.target.getStage());
-                console.log(point.x, point.y);
-
-                const positions = new Map().set(currentImage, {
-                    x: point.x - 50,
-                    y: point.y - 50,
-                });
-                rect.push({
-                    positions,
-                    width: 100,
-                    height: 100,
-                    fill: "grey",
-                    stroke: "black",
-                    opacity: 0.3,
-                    id: markers.length,
-                });
-                setMarkers(rect.concat());
-                selectMarker(markers.length);
-                setCreateMarkerBool(false);
-            } else {
-                let rect = markers.slice();
-                const point = getRelativePointerPosition(e.target.getStage());
-
-                let positions = rect[selectedId].positions.set(currentImage, {
-                    x: point.x - 50,
-                    y: point.y - 50,
-                });
-
-                rect[selectedId] = {
-                    ...rect[selectedId],
-                    positions,
-                };
-
-                console.log(rect);
-                setMarkers(rect.concat());
-                selectMarker(rect[selectedId].id);
-                setCreateMarkerBool(false);
-            }
-        } else return;
     };
 
     const [scale, setScale] = React.useState({
@@ -104,6 +60,49 @@ const PlayerCanvas = ({
             });
         }
     }, [setScale, videoPlayerStats]);
+
+    const createMarker = (e) => {
+        if (createMarkerBool && !markerInImage) {
+            if (selectedId === null) {
+                let rect = markers.slice();
+                const point = getRelativePointerPosition(e.target.getStage());
+                console.log(point.x, point.y);
+
+                const positions = new Map().set(currentImage, {
+                    x: point.x - 50,
+                    y: point.y - 50,
+                });
+                rect.push({
+                    positions,
+                    width: 100,
+                    height: 100,
+                    fill: "grey",
+                    stroke: "black",
+                    opacity: 0.3,
+                    id: markers.length,
+                });
+                setMarkers(rect.concat());
+                selectMarker(markers.length);
+            } else {
+                let rect = markers.slice();
+                const point = getRelativePointerPosition(e.target.getStage());
+
+                let positions = rect[selectedId].positions.set(currentImage, {
+                    x: point.x - rect[selectedId].width / 2,
+                    y: point.y - rect[selectedId].height / 2,
+                });
+
+                rect[selectedId] = {
+                    ...rect[selectedId],
+                    positions,
+                };
+
+                console.log(rect);
+                setMarkers(rect.concat());
+                selectMarker(rect[selectedId].id);
+            }
+        } else return;
+    };
 
     return (
         <Stage
