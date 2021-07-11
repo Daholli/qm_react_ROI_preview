@@ -8,7 +8,7 @@ const CurrentImage = ({ crop, scale, currentImage }) => {
     const [image] = useImage(currentImage, "Anonymous");
 
     return (
-        <Layer ref={layerRef} clearBeforeDraw={true}>
+        <Layer ref={layerRef}>
             <Image
                 image={image}
                 crop={crop}

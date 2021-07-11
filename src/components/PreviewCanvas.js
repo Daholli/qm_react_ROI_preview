@@ -10,6 +10,7 @@ const PreviewCanvas = ({ crop, videoPlayerStats, currentImage }) => {
         y: 100 / crop.height,
     });
 
+    // update scale whenever there are changes
     React.useEffect(() => {
         setScale({
             x: 100 / crop.width,

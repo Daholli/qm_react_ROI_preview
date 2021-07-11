@@ -74,6 +74,7 @@ const ListContainer = ({ markers, setMarkers, selectedId, selectMarker }) => {
             onRemove={(index) => {
                 markers.splice(index, 1);
                 setMarkers(markers.concat());
+                selectMarker(null);
             }}
             selectedId={selectedId}
             selectMarker={selectMarker}

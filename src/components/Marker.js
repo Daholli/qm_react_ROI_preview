@@ -22,8 +22,12 @@ const Marker = ({
         }
     }, [isSelected, positions, currentImage]);
 
+    // do not draw marker if there are no coordinates available
     if (!positions) return null;
 
+    /**
+     * Update the current crop when invoked
+     */
     const updateCrop = () => {
         setCrop(() => {
             const crop = {
@@ -36,11 +40,11 @@ const Marker = ({
         });
     };
 
+    // do not draw if no positions for the current image are available
     if (!positions.get(currentImage)) return null;
 
     return (
         <React.Fragment>
-            {/* <Rect globalCompositeOperation="destination-out" listening={false} closed /> */}
             <Rect
                 name="marker"
                 onClick={onSelect}
@@ -71,15 +75,12 @@ const Marker = ({
                     updateCrop();
                 }}
                 onTransform={(e) => {
-                    // transformer is changing scale of the node
-                    // and NOT its width or height
-                    // but in the store we have only width and height
-                    // to match the data better we will reset scale on transform end
+                    // transformer is changing scale of the node rather than width/height
                     const node = shapeRef.current;
                     const scaleX = node.scaleX();
                     const scaleY = node.scaleY();
 
-                    // we will reset it back
+                    //reset scale
                     node.scaleX(1);
                     node.scaleY(1);
                     onChange({
@@ -90,21 +91,23 @@ const Marker = ({
                         }),
                         // set minimal value
                         width: Math.max(5, node.width() * scaleX),
-                        height: Math.max(node.height() * scaleY),
+                        height: Math.max(5, node.height() * scaleY),
                     });
                     setCrop(() => {
                         return {
                             x: e.target.x(),
                             y: e.target.y(),
                             width: Math.max(5, node.width() * scaleX),
-                            height: Math.max(node.height() * scaleY),
+                            height: Math.max(5, node.height() * scaleY),
                         };
                     });
                 }}
+                // TODO: enable deletion of single markers
                 onDeleted={(e) => {
                     console.log(e, "Attempted delete");
                 }}
             />
+            {/* attach transformer when selected */}
             {isSelected && (
                 <Transformer
                     ref={trRef}

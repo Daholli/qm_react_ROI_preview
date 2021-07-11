@@ -5,19 +5,33 @@ import { Stage, Layer } from "react-konva";
 import CurrentImage from "./CurrentImage";
 import Marker from "./Marker";
 
+/**
+ * Function to return the relative pointer position of the object that was clicked
+ * @param {node} node
+ * @returns Coordinates of the pointer
+ */
 function getRelativePointerPosition(node) {
-    // the function will return pointer position relative to the passed node
-    // get pointer (say mouse or touch) position
     const pos = node.getStage().getPointerPosition();
     return getRelativePosition(node, pos);
 }
 
+/**
+ * Function to transform absolute coordinates to relative coordinates
+ * @param {node} node
+ * @param {coordinates} pos
+ * @returns transformed coordinates
+ */
 function getRelativePosition(node, pos) {
     const transform = node.getAbsoluteTransform().copy();
     transform.invert();
     return transform.point(pos);
 }
 
+/**
+ * The Main Canvas that has the image and all the markers in it.
+ * @param {object} object containing all variables and functions needed further down the hierarchy
+ * @returns JSX.element
+ */
 const PlayerCanvas = ({
     setCrop,
     videoPlayerStats,
@@ -31,6 +45,10 @@ const PlayerCanvas = ({
     selectMarker,
     markerInImage,
 }) => {
+    /**
+     * Check if the the user clicked on a shape or if wanted to revoke the selection
+     * @param {event} e
+     */
     const checkDeselect = (e) => {
         // deselect when clicked on empty area
         const clickedOnEmpty =
@@ -41,11 +59,18 @@ const PlayerCanvas = ({
         }
     };
 
+    /**
+     * The scale of the image and shapes inside the canvas
+     */
     const [scale, setScale] = React.useState({
         x: 1,
         y: 1,
     });
 
+    /**
+     * Check if the image provided by the user has a different aspect ratio and adjust
+     * the scale to match that aspect ratio
+     */
     React.useEffect(() => {
         if (videoPlayerStats.width > 800) {
             setScale(() => {
@@ -61,17 +86,27 @@ const PlayerCanvas = ({
         }
     }, [setScale, videoPlayerStats]);
 
+    /**
+     * Create a marker at mouse-click position if conditions are satisfied
+     * @param {event} e
+     * @returns null if no conditions are satisfied.
+     */
     const createMarker = (e) => {
         if (createMarkerBool && !markerInImage) {
+            // is a marker selected? if no create a new marker series other wise add position
             if (selectedId === null) {
                 let rect = markers.slice();
+                // get relative position
                 const point = getRelativePointerPosition(e.target.getStage());
                 console.log(point.x, point.y);
 
+                // create a new Map
                 const positions = new Map().set(currentImage, {
                     x: point.x - 50,
                     y: point.y - 50,
                 });
+
+                // push a new Marker to the array
                 rect.push({
                     positions,
                     width: 100,
@@ -81,23 +116,28 @@ const PlayerCanvas = ({
                     opacity: 0.3,
                     id: markers.length,
                 });
+
+                // update markers
                 setMarkers(rect.concat());
                 selectMarker(markers.length);
             } else {
                 let rect = markers.slice();
+                // get relative position
                 const point = getRelativePointerPosition(e.target.getStage());
 
+                // add a new position for the current image
                 let positions = rect[selectedId].positions.set(currentImage, {
                     x: point.x - rect[selectedId].width / 2,
                     y: point.y - rect[selectedId].height / 2,
                 });
 
+                // update to positions in marker
                 rect[selectedId] = {
                     ...rect[selectedId],
                     positions,
                 };
 
-                console.log(rect);
+                // update markers
                 setMarkers(rect.concat());
                 selectMarker(rect[selectedId].id);
             }
@@ -125,6 +165,7 @@ const PlayerCanvas = ({
                 currentImage={currentImage}
             />
             <Layer clearBeforeDraw={true} isListening={true}>
+                {/* loop over markers and draw them individually */}
                 {markers.map((rect, i) => {
                     return (
                         <Marker

@@ -10,18 +10,30 @@ import { PlayArrow, Stop, SkipNext, SkipPrevious, Edit } from "@material-ui/icon
 import { IconButton } from "@material-ui/core";
 import { ToggleButton } from "@material-ui/lab";
 
+/**
+ *  Helperfunction to be able to create an array with image names
+ * @param {int} end define endpoint of range
+ * @returns array of imagenames with numbers from 1 - endpoint in their name
+ */
 function range(end) {
     return Array(end - 1 + 1)
         .fill()
         .map((_, idx) => "image_" + (idx + 1) + ".jpg");
 }
 
+/**
+ * Main React component
+ * @returns JSX element
+ */
 const App = () => {
+    // Define the default videoPlayerStats
     const [videoPlayerStats, setVideoPlayerStats] = React.useState({
         width: 800,
-        height: 400,
+        height: 450,
     });
 
+    // set default crop to be in the upper left corner
+    // FIXME: create an "empty" picture for non tracked points
     const [crop, setCrop] = React.useState(() => {
         return {
             x: 0,
@@ -31,31 +43,45 @@ const App = () => {
         };
     });
 
+    // Array containing the array names
     const [imageSequence, setImageSequence] = React.useState(range(60));
 
+    // Array containing the markers, store the id of the currently selectedMarker
     const [markers, setMarkers] = React.useState([]);
     const [selectedId, selectMarker] = React.useState(null);
 
+    // id of the current image - 1
     const [currentImage, setCurrentImage] = React.useState(0);
 
-    const [markerInImage, setMarkerInImage] = React.useState(false);
-    const [createMarkerBool, setCreateMarkerBool] = React.useState(false);
-    const [editButtonStyle, setEditButtonStyle] = React.useState({ color: "green" });
+    // flags for marker creation
+    const [markerInImage, setMarkerInImage] = React.useState(false); // currently selected series has marker in image
+    const [createMarkerBool, setCreateMarkerBool] = React.useState(false); // currently want to create markers
+    const [editButtonStyle, setEditButtonStyle] = React.useState({ color: "green" }); // toggle for the edit button
 
+    // set the fps of the video, relevant if conversion from video to image is done
     const [fps, setFPS] = React.useState(30);
 
+    /**
+     * Change to previous image if not first image
+     */
     const prevImage = () => {
         if (currentImage - 1 >= 0) {
             setCurrentImage((currentImage) => currentImage - 1);
         }
     };
 
+    /**
+     * Change to next image if not last image
+     */
     const nextImage = () => {
         if (currentImage + 1 <= imageSequence.length - 1) {
             setCurrentImage((currentImage) => currentImage + 1);
         }
     };
 
+    /**
+     * Play image sequence at fps
+     */
     const playVideo = async () => {
         for (let i = currentImage; i < imageSequence.length; i++) {
             setCurrentImage(() => i);
@@ -63,28 +89,48 @@ const App = () => {
         }
     };
 
+    /**
+     * jump to first image
+     */
     const resetVideo = () => {
         setCurrentImage(0);
     };
 
+    /**
+     * Helper function to be able to play the image sequence
+     * @param {int} ms
+     * @returns Promise that resolves when timer is done
+     */
     function sleep(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
+    /**
+     * Handle key events left and right arrow, space for playback
+     * @param {event} e keyevent
+     */
     function handleKeyDown(e) {
         e.preventDefault();
         // console.log(`Key: ${e.key} with keycode ${e.keyCode} has been pressed`);
         if (e.keyCode === 37) {
+            // left arrow
             prevImage();
         } else if (e.keyCode === 39) {
+            // right arrow
             nextImage();
         } else if (e.keyCode === 32) {
+            // space
             playVideo();
         }
     }
 
+    // whenever a marker or image is changed, change the current preview and toggle flags
     React.useEffect(() => {
-        if (selectedId === null) return;
+        if (selectedId === null) {
+            setMarkerInImage(false);
+            return;
+        }
+
         if (markers[selectedId] === undefined) return;
         if (
             markers[selectedId].positions.get(imageSequence[currentImage]) === undefined
@@ -105,6 +151,7 @@ const App = () => {
         });
     }, [currentImage, imageSequence, markers, selectedId, setCrop]);
 
+    // add keyevent listeners
     React.useEffect(() => {
         window.addEventListener("keydown", handleKeyDown);
 
