@@ -244,7 +244,6 @@ const App = () => {
                                 setEditButtonStyle({ color: "green" });
                             }
                         }}
-                        onClick={() => {}}
                     >
                         <Edit style={editButtonStyle} />
                     </ToggleButton>
