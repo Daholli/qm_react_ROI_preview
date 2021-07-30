@@ -104,4 +104,4 @@ dist
 .tern-port
 
 # test images
-image_*.jpg
+# image_*.jpg
