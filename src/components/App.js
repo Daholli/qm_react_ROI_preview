@@ -13,12 +13,13 @@ import { ToggleButton } from "@material-ui/lab";
 /**
  *  Helperfunction to be able to create an array with image names
  * @param {int} end define endpoint of range
+ * @param {string} name the type of image sequence
  * @returns array of imagenames with numbers from 1 - endpoint in their name
  */
-function range(end) {
+function range(end, name) {
     return Array(end - 1 + 1)
         .fill()
-        .map((_, idx) => "image_" + (idx + 1) + ".jpg");
+        .map((_, idx) => name + "_" + (idx + 1) + ".jpg");
 }
 
 /**
@@ -44,7 +45,8 @@ const App = () => {
     });
 
     // Array containing the array names
-    const [imageSequence, setImageSequence] = React.useState(range(60));
+    const [imageSequence, setImageSequence] = React.useState(range(60, "boids"));
+    // const [imageSequence, setImageSequence] = React.useState(range(1786, "bottle"));
 
     // Array containing the markers, store the id of the currently selectedMarker
     const [markers, setMarkers] = React.useState([]);
